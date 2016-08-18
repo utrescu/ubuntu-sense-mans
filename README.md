@@ -251,7 +251,6 @@ Generem un fitxer amb les respostes seguint el tutorial ([Documentació](https:/
 
 
     ### Boot loader installation
-
     d-i grub-installer/only_debian boolean true
     d-i grub-installer/with_other_os boolean false
     d-i grub-installer/password password patata
