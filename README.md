@@ -1,25 +1,41 @@
-Crear un CD autoinstal·lable
+Crear un CD d'Ubuntu autoinstal·lable
 ================================
+La idea és generar un CD que no faci cap pregunta i que permeti fer la instal·lació automàtica d'un sistema amb Xubuntu, servidor SSH i l'usuari 'usuari'.
 
-Opcio 1 : Kickstart
+Després amb Ansible li aplicaré la configuració per defecte de les màquines i tindrem una màquina totalment instal·lada i adaptada al lloc en que s'ha instal·lat.
+
+** Perquè ho faig? **
+Els administradors de xarxes d'Ensenyament tenen una mena de passió per clonar màquines que no acabo d'endendre i vull evitar-ho tant com sigui possible.
+
+Clonar màquines no optimitza el sistema, deixa basura en les màquines, tenen problemes si els sistemes no són idèntics, duplica les claus SSH, ... Però el més important és que:
+
+> **odio clonar** 
+
+Per trobar un sistema que m'agradi he anat provant els mètodes que he trobat per fer-ho.
+
+Opció 1 : Kickstart
 --------------------------
 Fer servir kickstart (de Red Hat) sembla que és la forma més senzilla de fer-ho. De totes formes no té totes les opcions que té el Debian Installer de Ubuntu i per tant s'ha de recórrer a respondre algunes de les preguntes amb un fitxer *preseed*
 
 L'avantatge d'aquest sistema és que podem respondre les preguntes habituals amb un entorn gràfic i després només hem afegir respostes especialitzades d'Ubuntu a partir d'un fitxer *pressed*
 
+En general tothom parteix d'un CD amb Ubuntu Server perquè sembla que amb els LiveCD hi ha problemes per aconseguir passar dades a l'instal·lador 
+
 ### Procediment per crear el CD
 
 #### 1. Posar els fitxers en un directori temporal
 
-Es parteix d'un CD amb Ubuntu Server (sembla que els LiveCD tenen problemes) i es munta
+Es parteix d'un CD amb Ubuntu Server i es munta
 
     # mkdir -p /mnt/iso
-    #  mount -o loop ubuntu.iso /mnt/iso
+    #  mount -o loop ubuntu-16.04.1-server-amd64.iso /mnt/iso
 
 Ara es copien els arxius que fan falta en una carpeta temporal:
 
     # mkdir -p /opt/ubuntuiso 
     # cp -rt /mnt/iso /opt/ubuntuiso
+
+**Aquest primer pas serveix per totes les opcions**
 
 #### 2. Generar les respostes
 
@@ -155,20 +171,17 @@ Es posa el CD en una màquina i es veurà el procés d'instal·lació i sense ca
 
 
 Opció 2 : Fer servir un fitxer 'preseed'
-------------------
+--------------------------------------------
 L'instal·lador de Debian es pot personalitzar simplement creant un fitxer *preseed* amb les respostes a les preguntes ([Documentació](https://help.ubuntu.com/16.04/installation-guide/i386/apbs04.html)).
 
 ### Procediment per crear el CD
 
 #### 1. Posar els fitxers en un directori temporal 
 
-Es parteix d'un CD amb Ubuntu Server (sembla que els LiveCD tenen problemes) i es munta
+Ès exactament el mateix que en la opció anterior:
 
     # mkdir -p /mnt/iso
     #  mount -o loop ubuntu.iso /mnt/iso
-
-Ara es copien els arxius que fan falta en una carpeta temporal:
-
     # mkdir -p /opt/ubuntuiso 
     # cp -rt /mnt/iso /opt/ubuntuiso
 
@@ -249,6 +262,8 @@ Generem un fitxer amb les respostes seguint el tutorial ([Documentació](https:/
 
 La contrasenya la he xifrat fent servir *mkpasswd* però també es pot posar en planer
 
+    mkpasswd -m sha-512 contrasenya
+
 ### 3. Modificar el menú d'arrencada
 
 S'ha de modificar la opció del menú d'arrancada, isolinux/txt.cfg, perquè agafi els fitxers KickStart (modificant la opció append): 
@@ -287,8 +302,16 @@ Com que la instal·lació de paquets ja es pot fer amb Ansible estaria bé que i
 L'instal·lador de Debian no deixa fer preguntes en la instal·lació si hi ha l'opció d'arrencada **priority=critical** (que fa que hi hagi moltes menys preguntes).
 
 * Com fer que l'instal·lació només demani el nom del host?
+#### 1. Posar els fitxers en un directori temporal 
 
-### 1. Modificar l'arrencada
+Ès exactament el mateix que en la opció anterior:
+
+    # mkdir -p /mnt/iso
+    #  mount -o loop ubuntu.iso /mnt/iso
+    # mkdir -p /opt/ubuntuiso 
+    # cp -rt /mnt/iso /opt/ubuntuiso
+
+### 2. Modificar l'arrencada
 Com que demanarà dades l'instal·lador necessita saber quin idioma i quin teclat tenim instal·lat. Per això modifiquem l'entrada del menú, isolinux/text.cfg, perquè arrenqui amb més opcions que en els anteriors casos: 
 
     default install
@@ -299,7 +322,7 @@ Com que demanarà dades l'instal·lador necessita saber quin idioma i quin tecla
 
 D'aquesta forma no es queixarà abans de carregar el fitxer de preseed. 
 
-### 2. Afegir opcions al fitxer pressed
+### 3. Afegir opcions al fitxer pressed
 Com que ara demanarà més coses el fitxer pressed s'ha de modificar per respondre-hi: 
 
     d-i debian-installer/locale string ca_ES.UTF8
@@ -378,17 +401,12 @@ Com que ara demanarà més coses el fitxer pressed s'ha de modificar per respond
 
 He hagut de canviar la forma d'instal·lar els paquets perquè sinó em demanava que vull instal·lar.
 
-####  3. Generar el CD i provar
+####  4. Generar el CD i provar
 Per generar el CD es fa el mateix que en els altres casos.
 
-Es posa el CD en una màquina i es veurà el procés d'instal·lació i sense cap pregunta al cap d'una estona tindrem el sistema instal·lat amb l'usuari que volem, el servidor SSH, etc...: 
+Es posa el CD en una màquina i es veurà el procés d'instal·lació i sense cap pregunta més que el nom del host al cap d'una estona tindrem el sistema instal·lat amb l'usuari que volem, el servidor SSH, etc...: 
 
-![Xubuntu](imatges/xubuntu.png)
-
-####  Provar
-Es posa el CD en una màquina i es veurà el procés d'instal·lació i sense cap pregunta al cap d'una estona tindrem el sistema instal·lat amb l'usuari que volem, el servidor SSH, etc...: 
-
-![Xubuntu](imatges/xubuntu.png)
+![Xubuntu](imatges/xubuntu2.png)
 
 Com que s'ha d'esperar bastant a que toqui demanar pel nom de la màquina, el sistema no em sembla gaire interessant. 
 
