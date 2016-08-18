@@ -37,7 +37,7 @@ Es munta el CD d'Ubuntu Server en una partició (s'ha de fer com usuari administ
 I es copien els arxius del CD en una carpeta temporal:
 
     # mkdir -p /opt/ubuntuiso 
-    # cp -rt /mnt/iso /opt/ubuntuiso
+    # cp -rT /mnt/iso /opt/ubuntuiso
 
 Aquesta còpia es pot fer servir per fer totes les proves
 
@@ -194,7 +194,7 @@ Segurament aquest opció és la més "correcta" ja que fa servir l'instal·lador
     # mkdir -p /mnt/iso
     # mount -o loop ubuntu.iso /mnt/iso
     # mkdir -p /opt/ubuntuiso 
-    # cp -rt /mnt/iso /opt/ubuntuiso
+    # cp -rT /mnt/iso /opt/ubuntuiso
 
 #### 2. Generar les respostes
 
@@ -333,7 +333,7 @@ L'instal·lador de Debian no deixa fer preguntes en la instal·lació si hi ha l
     # mkdir -p /mnt/iso
     #  mount -o loop ubuntu.iso /mnt/iso
     # mkdir -p /opt/ubuntuiso 
-    # cp -rt /mnt/iso /opt/ubuntuiso
+    # cp -rT /mnt/iso /opt/ubuntuiso
 
 ### 2. Modificar l'arrencada
 
