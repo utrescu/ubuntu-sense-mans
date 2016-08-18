@@ -3,11 +3,9 @@ Crear un CD autoinstal·lable
 
 Opcio 1 : Kickstart
 -------------
-Fer servir kickstart (de Red Hat) sembla que és la forma més senzilla de fer-ho. 
+Fer servir kickstart (de Red Hat) sembla que és la forma més senzilla de fer-ho. De totes formes no té totes les opcions que té el Debian Installer de Ubuntu i per tant s'ha de recórrer a respondre algunes de les preguntes amb un fitxer *preseed*
 
-De totes formes no té totes les opcions que té el Debian Installer de Ubuntu i per tant s'ha de recórrer a respondre algunes de les preguntes amb un fitxer *preseed*
-
-La idea és respondre les preguntes que farà l'instal·lador a partir del programa gràfic per aconseguir respondre les respostes habituals i afegir respostes 'personalitzades' a partir d'un fitxer *pressed*
+L'avantatge d'aquest sistema és que podem respondre les preguntes habituals amb un entorn gràfic i després només hem afegir respostes especialitzades d'Ubuntu a partir d'un fitxer *pressed*
 
 ### Procediment per crear el CD
 
@@ -110,6 +108,14 @@ L'instal·lador d'Ubuntu fa unes quantes preguntes més que no es poden respondr
 
     d-i pkgsel/include string xubuntu-desktop
 
+També es poden afegir les respostes al fitxer Kickstart començant-les amb pressed (però no sempre m'han funcionat) 
+
+    preseed partman-lvm/confirm_nooverwrite boolean true
+    preseed partman-lvm/device_remove_lvm boolean true
+    preseed partman/confirm_write_new_label boolean true
+    preseed partman/confirm boolean true
+    preseed partman/confirm_nooverwrite boolean true
+
 Aquests arxius s'han de copiar a l'arrel del CD: 
 
     # cp ks.cfg /opt/ubuntuiso
@@ -140,4 +146,16 @@ Com que el fitxer està dins del CD hi he posat **ks=cdrom:/ks.cfg**. El fitxer 
 Només queda generar la ISO: 
 
     # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
+
+####  Provar
+Es posa el CD en una màquina i es veurà el procés d'instal·lació i sense cap pregunta al cap d'una estona tindrem el sistema instal·lat amb l'usuari que volem, el servidor SSH, etc...: 
+
+![Xubuntu](imatges/xubuntu.png)
+
+Un problema que he trobat a aquest sistema és que al no estar basat en el CD de Xubuntu s'ha de descarregar els paquets manualment i per tant la instal·lació tarda més temps...
+
+
+Opció 2 : Preseed
+------------------
+L'instal·lador de Debian es pot personalitzar simplement creant un fitxer *preseed* amb les respostes a les preguntes ([Documentació](https://help.ubuntu.com/16.04/installation-guide/i386/apbs04.html)).
 
