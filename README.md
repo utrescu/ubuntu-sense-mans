@@ -4,7 +4,7 @@ La idea és generar un CD que no faci cap pregunta i que permeti fer la instal·
 
 Després amb Ansible li aplicaré la configuració per defecte de les màquines i tindrem una màquina totalment instal·lada i adaptada al lloc en que s'ha instal·lat.
 
-** Perquè ho faig? **
+**Perquè ho faig?**
 Els administradors de xarxes d'Ensenyament tenen una mena de passió per clonar màquines que no acabo d'endendre i vull evitar-ho tant com sigui possible.
 
 Clonar màquines no optimitza el sistema, deixa basura en les màquines, tenen problemes si els sistemes no són idèntics, duplica les claus SSH, ... Però el més important és que:
