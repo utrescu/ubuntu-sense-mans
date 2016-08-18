@@ -187,6 +187,7 @@ L'instal·lador de Debian es pot personalitzar simplement creant un fitxer *pres
     # cp -rt /mnt/iso /opt/ubuntuiso
 
 #### 2. Generar les respostes
+
 Generem un fitxer amb les respostes seguint el tutorial ([Documentació](https://help.ubuntu.com/16.04/installation-guide/i386/apbs04.html)): 
 
     d-i debian-installer/locale string ca_ES.UTF8
@@ -264,6 +265,10 @@ La contrasenya la he xifrat fent servir *mkpasswd* però també es pot posar en 
 
     mkpasswd -m sha-512 contrasenya
 
+Els paquets els afegeixo amb *pkgsel/include*. En aquest cas instal·lo Xubuntu i el servidor OpenSSH:
+
+    d-i pkgsel/include string xubuntu-desktop openssh-server
+
 ### 3. Modificar el menú d'arrencada
 
 S'ha de modificar la opció del menú d'arrancada, isolinux/txt.cfg, perquè agafi els fitxers KickStart (modificant la opció append): 
@@ -280,6 +285,7 @@ Ho hauria pogut fer posant el fitxer en el CD i canviar la línia append per:
     append preseed/file=/cdrom/preseed.cfg debian-installer/locale=ca_ES netcfg/choose_interface=auto initrd=/install/initrd.gz priority=critical --
 
 #### 4. Generar la ISO 
+
 Només queda generar la ISO: 
 
     # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
@@ -302,6 +308,7 @@ Com que la instal·lació de paquets ja es pot fer amb Ansible estaria bé que i
 L'instal·lador de Debian no deixa fer preguntes en la instal·lació si hi ha l'opció d'arrencada **priority=critical** (que fa que hi hagi moltes menys preguntes).
 
 * Com fer que l'instal·lació només demani el nom del host?
+
 #### 1. Posar els fitxers en un directori temporal 
 
 Ès exactament el mateix que en la opció anterior:
@@ -312,6 +319,7 @@ L'instal·lador de Debian no deixa fer preguntes en la instal·lació si hi ha l
     # cp -rt /mnt/iso /opt/ubuntuiso
 
 ### 2. Modificar l'arrencada
+
 Com que demanarà dades l'instal·lador necessita saber quin idioma i quin teclat tenim instal·lat. Per això modifiquem l'entrada del menú, isolinux/text.cfg, perquè arrenqui amb més opcions que en els anteriors casos: 
 
     default install
@@ -323,6 +331,7 @@ Com que demanarà dades l'instal·lador necessita saber quin idioma i quin tecla
 D'aquesta forma no es queixarà abans de carregar el fitxer de preseed. 
 
 ### 3. Afegir opcions al fitxer pressed
+
 Com que ara demanarà més coses el fitxer pressed s'ha de modificar per respondre-hi: 
 
     d-i debian-installer/locale string ca_ES.UTF8
@@ -402,6 +411,7 @@ Com que ara demanarà més coses el fitxer pressed s'ha de modificar per respond
 He hagut de canviar la forma d'instal·lar els paquets perquè sinó em demanava que vull instal·lar.
 
 ####  4. Generar el CD i provar
+
 Per generar el CD es fa el mateix que en els altres casos.
 
 Es posa el CD en una màquina i es veurà el procés d'instal·lació i sense cap pregunta més que el nom del host al cap d'una estona tindrem el sistema instal·lat amb l'usuari que volem, el servidor SSH, etc...: 
