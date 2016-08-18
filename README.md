@@ -16,36 +16,39 @@ Per trobar un sistema que m'agradi he anat provant els mètodes que he trobat pe
 
 Opció 1 : Kickstart
 --------------------------
-Fer servir kickstart (de Red Hat) sembla que és la forma més senzilla de fer-ho. De totes formes no té totes les opcions que té el Debian Installer de Ubuntu i per tant s'ha de recórrer a respondre algunes de les preguntes amb un fitxer *preseed*
+Fer servir kickstart (de Red Hat) sembla que és la forma més senzilla de fer-ho. De totes formes té algun problema: 
 
-L'avantatge d'aquest sistema és que podem respondre les preguntes habituals amb un entorn gràfic i després només hem afegir respostes especialitzades d'Ubuntu a partir d'un fitxer *pressed*
+- L'instal·lador d'Ubuntu no suporta totes les opcions de Kickstart. Per exemple no funciona la configuració automàtica de LDAP durant la instal·lació (En Fedora si que va), no es pot configurar el tallafocs, etc.. 
+- No té totes les opcions que té el Debian Installer i per tant per algunes opcions s'ha de recórrer a respondre algunes de les preguntes amb un fitxer *preseed*. 
 
-En general tothom parteix d'un CD amb Ubuntu Server perquè sembla que amb els LiveCD hi ha problemes per aconseguir passar dades a l'instal·lador 
+L'avantatge d'aquest sistema és que podem respondre les preguntes habituals amb un entorn gràfic i després només s'ha d'editar el fitxer per afegir-hi les respostes especialitzades d'Ubuntu.
+
+En general he vist que tothom parteix d'un CD amb Ubuntu Server perquè sembla que amb els LiveCD hi ha problemes per aconseguir passar dades a l'instal·lador 
 
 ### Procediment per crear el CD
 
 #### 1. Posar els fitxers en un directori temporal
 
-Es parteix d'un CD amb Ubuntu Server i es munta
+Es munta el CD d'Ubuntu Server en una partició (s'ha de fer com usuari administrador):
 
     # mkdir -p /mnt/iso
     #  mount -o loop ubuntu-16.04.1-server-amd64.iso /mnt/iso
 
-Ara es copien els arxius que fan falta en una carpeta temporal:
+I es copien els arxius del CD en una carpeta temporal:
 
     # mkdir -p /opt/ubuntuiso 
     # cp -rt /mnt/iso /opt/ubuntuiso
 
-**Aquest primer pas serveix per totes les opcions**
+Aquesta còpia es pot fer servir per fer totes les proves
 
 #### 2. Generar les respostes
 
-Es genera el fitxer de respostes Kickstart a partir del programa system-config-kickstart que està en la distribució d'Ubuntu: 
+Es genera el fitxer de respostes Kickstart a partir del programa **system-config-kickstart** que està disponible en la distribució d'Ubuntu: 
 
     # apt-get install system-config-kickstart
     # system-config-kickstart
 
-Proporcionarà un entorn gràfic per preparar les respostes. Algunes de les respostes es poden ignorar perquè no estan activades en Ubuntu (configurar entorn gràfic, autenticació LDAP, etc.. ) i d'altres no donen tantes possibilitats (particionat de disc, ...)
+Proporcionarà un entorn gràfic per preparar les respostes. Algunes de les respostes es poden ignorar perquè no estan activades en Ubuntu (configurar entorn gràfic, autenticacions no bàsiques, Tallafocs, etc.. ) i en altres hi faltaran possibilitats (particionat automàtic de disc, ...)
 
 ![system-config-kickstart](imatges/ks.png)
 
@@ -107,15 +110,15 @@ El que he fet jo té aquesta forma:
     #Do not configure the X Window System
     skipx
 
-Al final s'hi poden afegir paquets 'extres' a instal·lar durant la instal·lació: 
+Al final s'hi poden afegir paquets 'extres' a instal·lar durant la instal·lació afegint la opció **%packages%**: 
 
     # Paquets a instal·lar
     %packages
-    @ xubuntu-desktop
+    @xubuntu-desktop
     openssh-server
     screen
 
-L'instal·lador d'Ubuntu fa unes quantes preguntes més que no es poden respondre amb Kickstart. Per fer-ho es genera un arxiu *pressed*, en aquest exemple **ks.preseed** (algunes respostes pot ser que no calguin perquè he estat fent proves...)
+L'instal·lador d'Ubuntu fa unes quantes preguntes que no es poden respondre amb Kickstart. Per tant s'ha de generar un arxiu *pressed* amb les respostes, en aquest exemple serà **ks.preseed** (algunes respostes pot ser que no calguin perquè he estat fent proves...)
 
     d-i preseed/early_command string umount /media
     d-i partman/unmount_active boolean true
@@ -123,10 +126,10 @@ L'instal·lador d'Ubuntu fa unes quantes preguntes més que no es poden respondr
     d-i partman/choose_partition \
     select Finish partitioning and write changes to disk
     d-i partman/confirm boolean true
-
+    # Per algun motiu xubuntu no se m'instal·lava fins que l'he definit aquí...
     d-i pkgsel/include string xubuntu-desktop
 
-També es poden afegir les respostes al fitxer Kickstart començant-les amb pressed (però no sempre m'han funcionat) 
+També es poden afegir les respostes directament en el fitxer Kickstart començant-les amb pressed 
 
     preseed partman-lvm/confirm_nooverwrite boolean true
     preseed partman-lvm/device_remove_lvm boolean true
@@ -134,14 +137,14 @@ També es poden afegir les respostes al fitxer Kickstart començant-les amb pres
     preseed partman/confirm boolean true
     preseed partman/confirm_nooverwrite boolean true
 
-Aquests arxius s'han de copiar a l'arrel del CD: 
+Aquests arxius s'han de copiar al que serà l'arrel del CD: 
 
     # cp ks.cfg /opt/ubuntuiso
     # cp ks.preseed /opt/ubuntuiso
 
 #### 3. Modificar la configuració
 
-Per evitar que s'aturi esperant que triem l'idioma d'instal·lació es pot modificar el valor de *timeout* al fitxer isolinux/isolinux.cfg (10 és un segon): 
+Per evitar que s'aturi esperant que triem l'idioma d'instal·lació es pot modificar el valor de *timeout* del fitxer isolinux/isolinux.cfg que està a zero per un valor que indicarà el temps d'espera (10 és un segon): 
 
     # cat /opt/ubuntuiso/isolinux/isolinux.cfg
     path 
@@ -154,26 +157,33 @@ Per evitar que s'aturi esperant que triem l'idioma d'instal·lació es pot modif
 I per acabar la configuració s'ha de modificar la opció del menú d'arrancada, isolinux/txt.cfg, perquè agafi els fitxers KickStart (modificant la opció append): 
 
     label install
-    menu label ^Install Ubuntu Server
-    kernel /install/vmlinuz
-    append file=/cdrom/preseed/ubuntu-server.seed initrd=/install/initrd.gz ks=cdrom:/ks.cfg preseed/file=/cdrom/ks.preseed --
+      menu label ^Install Ubuntu Server
+      kernel /install/vmlinuz
+      append file=/cdrom/preseed/ubuntu-server.seed initrd=/install/initrd.gz ks=cdrom:/ks.cfg preseed/file=/cdrom/ks.preseed --
 
-Com que el fitxer està dins del CD hi he posat **ks=cdrom:/ks.cfg**. El fitxer no cal que sigui dins del CD ja que es pot proporcionar amb qualsevol dels mètodes habituals http, ftp, o nfs
+Com que el fitxer està dins del CD hi he posat **ks=cdrom:/ks.cfg**. De fet el fitxer no cal que sigui dins del CD ja que es pot proporcionar el fitxer amb qualsevol dels mètodes habituals http, ftp, o nfs. Per exemple **ks=http://192.168.88.225/ks.cfg**.
 
 #### 4. Generar la ISO 
+
 Només queda generar la ISO: 
 
     # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
 
 ####  Provar
-Es posa el CD en una màquina i es veurà el procés d'instal·lació i sense cap pregunta al cap d'una estona tindrem el sistema instal·lat amb l'usuari que volem, el servidor SSH, etc...: 
+
+Es posa el CD en una màquina i el procés d'instal·lació es farà sense cap pregunta. 
 
 ![Xubuntu](imatges/xubuntu.png)
+
+Les particions de disc les he de millorar :-)
 
 
 Opció 2 : Fer servir un fitxer 'preseed'
 --------------------------------------------
+
 L'instal·lador de Debian es pot personalitzar simplement creant un fitxer *preseed* amb les respostes a les preguntes ([Documentació](https://help.ubuntu.com/16.04/installation-guide/i386/apbs04.html)).
+
+Segurament aquest opció és la més "correcta" ja que fa servir l'instal·lador de Debian que és la base de l'instal·lador de Ubuntu.
 
 ### Procediment per crear el CD
 
@@ -182,7 +192,7 @@ L'instal·lador de Debian es pot personalitzar simplement creant un fitxer *pres
 Ès exactament el mateix que en la opció anterior:
 
     # mkdir -p /mnt/iso
-    #  mount -o loop ubuntu.iso /mnt/iso
+    # mount -o loop ubuntu.iso /mnt/iso
     # mkdir -p /opt/ubuntuiso 
     # cp -rt /mnt/iso /opt/ubuntuiso
 
@@ -228,7 +238,6 @@ Generem un fitxer amb les respostes seguint el tutorial ([Documentació](https:/
     d-i partman-lvm/confirm_nooverwrite boolean true
     d-i partman-auto-lvm/guided_size string max
 
-
     ### Usuari per defecte (potser hauria de xifrar la contrasenya)
     d-i passwd/user-fullname string Usuari pelat
     d-i passwd/username string usuari
@@ -250,13 +259,11 @@ Generem un fitxer amb les respostes seguint el tutorial ([Documentació](https:/
     d-i pkgsel/include string xubuntu-desktop openssh-server
     d-i pkgsel/update-policy select none
 
-
     ### Boot loader installation
     d-i grub-installer/only_debian boolean true
     d-i grub-installer/with_other_os boolean false
     d-i grub-installer/password password patata
     d-i grub-installer/password-again password patata
-
 
     ### Finishing up the installation
     d-i finish-install/reboot_in_progress note
@@ -269,18 +276,27 @@ Els paquets els afegeixo amb *pkgsel/include*. En aquest cas instal·lo Xubuntu 
 
     d-i pkgsel/include string xubuntu-desktop openssh-server
 
+Mentres feia proves he descobert com es pot fer perquè crei automàticament la partició arrel, swap i home: 
+
+    d-i partman-auto/choose_recipe select home
+
+Aquest sistema permet posar contrasenya a Grub automàticament (en el fitxer hi he posat 'patata' sense xifrar però es pot posar la contrasenya xifrada)
+
 ### 3. Modificar el menú d'arrencada
 
-S'ha de modificar la opció del menú d'arrancada, isolinux/txt.cfg, perquè agafi els fitxers KickStart (modificant la opció append): 
+S'ha de modificar la opció del menú d'arrancada, isolinux/txt.cfg, perquè agafi el fitxer amb la resposta (modificant la opció append). 
+
+El fitxer amb les respostes es pot carregar des de http o ftp (preseed/url): 
+
     default install
     label install
       menu label ^Install Ubuntu Server
       kernel /install/vmlinuz
       append preseed/url=http://192.168.88.225/preseed.cfg debian-installer/locale=ca_ES netcfg/choose_interface=auto initrd=/install/initrd.gz priority=critical --
 
-En aquest cas per fer-lo diferent de l'anterior la configuració la he posat en un servidor web. L'instal·lador se la descarregarà quan la necessiti per obtenir les respostes
+En aquest cas la configuració es carrega des d'un servidor web. L'instal·lador se la descarregarà quan la necessiti per poder tenir les respostes i no haver-les de demanar.
 
-Ho hauria pogut fer posant el fitxer en el CD i canviar la línia append per: 
+Ho hauria pogut fer posant el fitxer en el CD i canviar la línia append per (presed/file): 
 
     append preseed/file=/cdrom/preseed.cfg debian-installer/locale=ca_ES netcfg/choose_interface=auto initrd=/install/initrd.gz priority=critical --
 
@@ -291,7 +307,8 @@ Només queda generar la ISO:
     # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
 
 ####  Provar
-Es posa el CD en una màquina i es veurà el procés d'instal·lació i sense cap pregunta al cap d'una estona tindrem el sistema instal·lat amb l'usuari que volem, el servidor SSH, etc...: 
+
+Es posa el CD en una màquina i el procés d'instal·lació es farà sense cap pregunta. Tot acabarà amb el sistema instal·lat amb Xubuntu, amb l'usuari 'usuari' i el servidor SSH. 
 
 ![Xubuntu](imatges/xubuntu.png)
 
@@ -414,7 +431,7 @@ He hagut de canviar la forma d'instal·lar els paquets perquè sinó em demanava
 
 Per generar el CD es fa el mateix que en els altres casos.
 
-Es posa el CD en una màquina i es veurà el procés d'instal·lació i sense cap pregunta més que el nom del host al cap d'una estona tindrem el sistema instal·lat amb l'usuari que volem, el servidor SSH, etc...: 
+Es posa el CD en una màquina, es veurà el procés d'instal·lació i només responent el nom del host tindrem el sistema instal·lat amb l'usuari que volem, el servidor SSH, etc...: 
 
 ![Xubuntu](imatges/xubuntu2.png)
 
@@ -424,6 +441,6 @@ Segurament el millor és que rebin el nom directament del DHCP
 
 Modificar CD de Xubuntu
 ===============================
-Un problema que he trobat en la forma d'instal·lar és que al no estar basat en el CD de Xubuntu s'ha de descarregar els paquets manualment i per tant la instal·lació tarda més temps...
+Un problema que he trobat en la forma d'instal·lar és que al no estar basat en el CD de Xubuntu s'ha de descarregar els paquets durant la instal·lació i per tant tarda una estona ...
 
 El que seria interessant seria poder modificar directament el CD d'instal·lació de Xubuntu (que és un Live CD ... )
