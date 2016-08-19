@@ -444,3 +444,9 @@ Modificar CD de Xubuntu
 Un problema que he trobat en la forma d'instal·lar és que al no estar basat en el CD de Xubuntu s'ha de descarregar els paquets durant la instal·lació i per tant tarda una estona ...
 
 El que seria interessant seria poder modificar directament el CD d'instal·lació de Xubuntu (que és un Live CD ... )
+
+El problema està en que fan servir un instal·lador anomenat Ubiquity i tots els intents per automatizar la instal·lació, per ara, han acabat com el rosari de l'Aurora:
+
+* No s'automatitza la instal·lació (no es pot escapar de la pantalla inicial)
+* Quan he aconseguit que s'instal·li sense demanar res, no arranca el sistema...
+
