@@ -451,7 +451,9 @@ El problema està en que fan servir un instal·lador anomenat Ubiquity i tots el
 * No s'automatitza la instal·lació (no es pot escapar de la pantalla inicial)
 * Quan he aconseguit que s'instal·li sense demanar res, no arranca el sistema...
 
-Després de moltes proves he trobat que el problema està en fer les particions amb LVM. Sembla que Ubuntu Server no hi té cap problema però les versions Desktop NO.
+![fail](imatges/fail.png)
+
+Després de moltes proves he trobat que el problema està en fer les particions amb LVM. Sembla que Ubuntu Server no hi té cap problema però les versions Desktop NO FUNCIONEN.
 
 Canviant el pressed per: 
 
@@ -617,7 +619,7 @@ Només queda generar la ISO:
     # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
 
 Es posa el CD en una màquina i el procés d'instal·lació es farà sense cap pregunta:
- 
+
 - Sistema instal·lat amb Xubuntu
 - usuari 'usuari' 
 - servidor SSH. 
