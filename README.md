@@ -441,6 +441,7 @@ Segurament el millor és que rebin el nom directament del DHCP
 
 Modificar CD de Xubuntu Live CD
 ===============================
+
 Un problema que he trobat en la forma d'instal·lar és que al no estar basat en el CD de Xubuntu s'ha de descarregar els paquets durant la instal·lació i per tant tarda una estona ...
 
 El que seria interessant seria poder modificar directament el CD d'instal·lació de Xubuntu (que és un Live CD ... )
@@ -462,6 +463,7 @@ Creació del CD
 ---------------------
 
 ### 1. Fer una còpia temporal del CD
+
 Com sempre es copien els arxius en local per poder modificar-los: 
 
     # mkdir /mnt/cdrom
@@ -470,6 +472,7 @@ Com sempre es copien els arxius en local per poder modificar-los:
     # cp -rT /mnt/iso /opt/iso 
 
 ### 2. Modificar els fitxers d'arrencada
+
 Són els mateixos de les opcions anteriors. Per exemple es canvia el timeout a perquè no calgui iniciar el CD manualment '/opt/iso/isolinux/isolinux.cfg'
 
     path 
@@ -488,13 +491,14 @@ Es modifica el fitxer *txt.cfg* del mateix directori per fer que la instal·laci
       append auto file=/cdrom/xubuntu.cfg keyboard-configuration/layoutcode=us and console-setup/ask_detect=false boot=casper automatic-ubiquity noprompt initrd=/casper/initrd.lz ---
 
 ### 3. Crear les respostes
+
 En aquesta opció el fitxer de respostes tindrà unes opcions especials *ubiquity* que són per les opcions que no estan en el Debian Installer.
 
 Per algun motiu la instal·lació extra de paquets amb el sistema de Debian no funciona. Aquesta línia ha estat totalment ignorada:
 
     d-i pkgsel/include string openssh-server
 
-I l'he hagut de canviar per un script de post instal·lació d'Ubiquity:
+I l'he hagut de canviar per un script de post instal·lació d'Ubiquity per poder instal·lar el servidor SSH (s'hi pot afegir el que faci falta):
 
     ubiquity ubiquity/success_command string \
     in-target apt-get -y install openssh-server;
@@ -605,3 +609,16 @@ El fitxer de respostes xubuntu.cfg tindrà una forma semblant a aquesta:
 I com que en la configuració he posat que les respostes estaran en el CD hi copio el fitxer xubuntu.cfg a l'arrel 
 
     # cp xubuntu.cfg /opt/iso
+
+#### 4. Generar la ISO i provar-ho
+
+Només queda generar la ISO: 
+
+    # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
+
+Es posa el CD en una màquina i el procés d'instal·lació es farà sense cap pregunta. Tot acabarà amb el sistema instal·lat amb Xubuntu, amb l'usuari 'usuari' i el servidor SSH. 
+
+Sense cap mena de dubte és el millor sistema. 
+
+> Per mi el millor procediment és posar el fitxer amb les respostes en un servidor HTTP de manera que amb el mateix CD es puguin aplicar diferents configuracions simplement canviant el fitxer.
+
