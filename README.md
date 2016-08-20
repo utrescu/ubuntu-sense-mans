@@ -616,7 +616,11 @@ Només queda generar la ISO:
 
     # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
 
-Es posa el CD en una màquina i el procés d'instal·lació es farà sense cap pregunta. Tot acabarà amb el sistema instal·lat amb Xubuntu, amb l'usuari 'usuari' i el servidor SSH. 
+Es posa el CD en una màquina i el procés d'instal·lació es farà sense cap pregunta:
+ 
+- Sistema instal·lat amb Xubuntu
+- usuari 'usuari' 
+- servidor SSH. 
 
 Sense cap mena de dubte és el millor sistema. 
 
