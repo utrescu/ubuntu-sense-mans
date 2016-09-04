@@ -466,7 +466,7 @@ Creació del CD
 
 ### 1. Fer una còpia temporal del CD
 
-Com sempre es copien els arxius en local per poder modificar-los: 
+Com sempre es copien els arxius en local per poder modificar-los i fer una ISO nova: 
 
     # mkdir /mnt/cdrom
     # sudo mount -o loop xubuntu-16.04.1-desktop-amd64.iso /mnt/iso
@@ -475,7 +475,7 @@ Com sempre es copien els arxius en local per poder modificar-los:
 
 ### 2. Modificar els fitxers d'arrencada
 
-Són els mateixos de les opcions anteriors. Per exemple es canvia el timeout a perquè no calgui iniciar el CD manualment '/opt/iso/isolinux/isolinux.cfg'
+Són els mateixos de les opcions anteriors. Per exemple es canvia el timeout del fitxer '/opt/iso/isolinux/isolinux.cfg' perquè no calgui prémer return per iniciar la instal·lació 
 
     path 
     include menu.cfg
@@ -484,7 +484,7 @@ Són els mateixos de les opcions anteriors. Per exemple es canvia el timeout a p
     timeout 10
     ui gfxboot bootlogo
 
-Es modifica el fitxer *txt.cfg* del mateix directori per fer que la instal·lació sigui la opció per defecte *default* per *live-install* i es canvien els paràmetres d'arrencada de *live-install* (deixo el teclat americà perquè com que no respondré cap pregunta ... )
+Es modifica el fitxer *txt.cfg* del mateix directori per fer que la instal·lació sigui la opció per defecte, *default* serà *live-install*, i es canvien els paràmetres d'arrencada del *live-install* (deixo el teclat americà perquè com que no respondré cap pregunta ... )
 
     default live-install
     label live-install
@@ -517,13 +517,13 @@ Resulta que els sistemes amb UEFI no fan servir isolinux per arrancar sinó que 
 
 ### 3. Crear les respostes
 
-En aquesta opció el fitxer de respostes tindrà unes opcions especials *ubiquity* que són per les opcions que no estan en el Debian Installer.
+En aquesta opció el fitxer de respostes tindrà unes opcions especials *ubiquity* que són per les opcions específiques de l'instal·lador d'Ubuntu que no estan en el Debian Installer.
 
-Per algun motiu la instal·lació extra de paquets amb el sistema de Debian no funciona. Aquesta línia ha estat totalment ignorada:
+Per algun motiu la instal·lació extra de paquets amb el sistema de Debian no funciona (amb els altres sistemes anava...) però ara aquesta línia ha estat totalment ignorada:
 
     d-i pkgsel/include string openssh-server
 
-I l'he hagut de canviar per un script de post instal·lació d'Ubiquity per poder instal·lar el servidor SSH (s'hi pot afegir el que faci falta):
+Per poder instal·lar el servidor OpenSSH ho he hagut de fer en un script de post instal·lació d'Ubiquity (s'hi pot afegir el que faci falta):
 
     ubiquity ubiquity/success_command string \
     in-target apt-get -y install openssh-server;
@@ -558,7 +558,6 @@ El fitxer de respostes xubuntu.cfg tindrà una forma semblant a aquesta:
     d-i netcfg/choose_interface select auto
     d-i netcfg/wireless_wep string
 
-
     ### Mirror (no tinc clar que calgui)
     choose-mirror-bin mirror/http/proxy string
 
@@ -567,10 +566,10 @@ El fitxer de respostes xubuntu.cfg tindrà una forma semblant a aquesta:
     d-i time/zone string Europe/Madrid
     d-i clock-setup/ntp boolean true
 
-    ### Partitioning
+    ### Evitar que faci preguntes si ja hi ha una partició
     d-i preseed/early_command string umount /media
 
-    ### Partició de disc amb carpeta /home a part.
+    ### Partició de disc amb carpeta /home en una partició a part.
     d-i partman-auto/method string regular
     d-i partman-lvm/device_remove_lvm boolean true
     d-i partman-lvm/confirm boolean true
@@ -586,11 +585,7 @@ El fitxer de respostes xubuntu.cfg tindrà una forma semblant a aquesta:
     d-i partman-lvm/confirm_nooverwrite boolean true
     d-i partman-auto-lvm/guided_size string max
 
-    ### Base system installation
-
-    ### Account setup
-
-    # To create a normal user account.
+    ### Creació del compte d'usuari 'usuari'
     d-i passwd/user-fullname string Usuari pelat
     d-i passwd/username string usuari
     #d-i passwd/user-password password patata
@@ -599,7 +594,7 @@ El fitxer de respostes xubuntu.cfg tindrà una forma semblant a aquesta:
     d-i user-setup/encrypt-home boolean false
     d-i user-setup/allow-password-weak boolean true
 
-    ### Apt setup
+    ### Definir els repositoris
     d-i mirror/country string ES
     d-i mirror/http/proxy string
     d-i apt-setup/restricted boolean true
@@ -607,16 +602,18 @@ El fitxer de respostes xubuntu.cfg tindrà una forma semblant a aquesta:
     d-i pkgsel/install-language-support boolean true
     d-i pkgsel/ignore-incomplete-language-support boolean true
 
-    ### Package selection
+    ### Instal·lació de paquets 
     # Install the Xubuntu desktop.
     tasksel	tasksel/first	multiselect xubuntu-desktop
     d-i	pkgsel/language-pack-patterns	string
-    d-i pkgsel/include string openssh-server
+    
+    ubiquity ubiquity/success_command string \
+      in-target apt-get -y install openssh-server;
     
     d-i pkgsel/upgrade select none
-    d-i pkgsel/update-policy select none
+    d-i pkgsel/update-policy select unattended-upgrades
 
-    ### Boot loader installation
+    ### Instal·lació de Grub 
 
     d-i grub-installer/only_debian boolean true
     d-i grub-installer/with_other_os boolean false
@@ -679,6 +676,7 @@ Es posa el CD en una màquina i el procés d'instal·lació es farà sense cap p
 - Sistema instal·lat amb Xubuntu
 - usuari 'usuari' 
 - servidor SSH. 
+- Grub protegit amb contrasenya
 
 Sense cap mena de dubte és el millor sistema. 
 
