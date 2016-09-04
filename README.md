@@ -492,6 +492,29 @@ Es modifica el fitxer *txt.cfg* del mateix directori per fer que la instal·laci
       kernel /casper/vmlinuz.efi
       append auto file=/cdrom/xubuntu.cfg keyboard-configuration/layoutcode=us and console-setup/ask_detect=false boot=casper automatic-ubiquity noprompt initrd=/casper/initrd.lz ---
 
+#### UEFI
+Resulta que els sistemes amb UEFI no fan servir isolinux per arrancar sinó que fan servir Grub. Per això per aquests sistemes s'ha de modificar *grub.cfg* i posar-hi les opcions d'arrancada del kernel: 
+
+    if loadfont /boot/grub/font.pf2 ; then
+        set gfxmode=auto
+        insmod efi_gop
+        insmod efi_uga
+        insmod gfxterm
+        terminal_output gfxterm
+    fi
+
+    set menu_color_normal=white/black
+    set menu_color_highlight=black/light-gray
+    set timeout=1
+    set default=0
+
+    menuentry "Install automatic" {
+            set gfxpayload=keep
+        linux	/casper/vmlinuz.efi  file=/cdrom/xubuntu.cfg boot=casper auto automatic-ubiquity noprompt quiet ---
+            initrd /casper/initrd.lz
+    }
+    ...
+
 ### 3. Crear les respostes
 
 En aquesta opció el fitxer de respostes tindrà unes opcions especials *ubiquity* que són per les opcions que no estan en el Debian Installer.
@@ -614,9 +637,42 @@ I com que en la configuració he posat que les respostes estaran en el CD hi cop
 
 #### 4. Generar la ISO i provar-ho
 
-Només queda generar la ISO: 
+Només queda generar la ISO (sense UEFI): 
 
-    # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
+    # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/iso
+
+O amb UEFI: 
+
+    # mkisofs -r -U -V "Custom" -cache-inodes -J -joliet-long -v -T  -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -o /opt/xautomount2.iso /opt/iso
+
+Es pot comprovar que es té suport de UEFI:
+
+    # dumpet -i /home/xavier/xautomount2.iso 
+    Validation Entry:
+        Header Indicator: 0x01 (Validation Entry)
+        PlatformId: 0x00 (80x86)
+        ID: ""
+        Checksum: 0x55aa
+        Key bytes: 0x55aa
+    Boot Catalog Default Entry:
+        Entry is bootable
+        Boot Media emulation type: no emulation
+        Media load segment: 0x0 (0000:7c00)
+        System type: 0 (0x00)
+        Load Sectors: 4 (0x0004)
+        Load LBA: 184 (0x000000b8)
+    Section Header Entry:
+        Header Indicator: 0x91 (Final Section Header Entry)
+        PlatformId: 0xef (EFI)
+        Section Entries: 1
+        ID: ""
+    Boot Catalog Section Entry:
+        Entry is bootable
+        Boot Media emulation type: no emulation
+        Media load address: 0 (0x0000)
+        System type: 0 (0x00)
+        Load Sectors: 4736 (0x1280)
+        Load LBA: 204 (0x000000cc)
 
 Es posa el CD en una màquina i el procés d'instal·lació es farà sense cap pregunta:
 
@@ -627,4 +683,10 @@ Es posa el CD en una màquina i el procés d'instal·lació es farà sense cap p
 Sense cap mena de dubte és el millor sistema. 
 
 > Per mi el millor procediment és posar el fitxer amb les respostes en un servidor HTTP de manera que amb el mateix CD es puguin aplicar diferents configuracions simplement canviant el fitxer.
+
+### Problemes amb UEFI
+Sembla que durant la instal·lació si es fa servir UEFI amb SecureBoot i **NO hi ha connexió a Internet** la instal·lació falla al instal·lar el gestor d'arrencada:
+
+![falla](imatges/uefail.png)
+
 
