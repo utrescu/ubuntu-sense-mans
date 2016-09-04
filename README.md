@@ -647,7 +647,7 @@ O amb UEFI:
 
 Es pot comprovar que es té suport de UEFI:
 
-    # dumpet -i /home/xavier/xautomount2.iso 
+    # dumpet -i /opt/xautomount2.iso 
     Validation Entry:
         Header Indicator: 0x01 (Validation Entry)
         PlatformId: 0x00 (80x86)
