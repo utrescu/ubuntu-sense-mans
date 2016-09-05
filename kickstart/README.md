@@ -151,7 +151,9 @@ Com que el fitxer està dins del CD hi he posat **ks=cdrom:/ks.cfg**. De fet el 
 
 Només queda generar la ISO (Per sistemes sense EFI): 
 
-    # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
+    # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l \
+       -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot \ 
+       -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
 
 ####  Provar
 

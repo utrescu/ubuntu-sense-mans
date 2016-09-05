@@ -124,7 +124,9 @@ Ho hauria pogut fer posant el fitxer en el CD i canviar la línia append per (pr
 
 Només queda generar la ISO: 
 
-    # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
+    # mkisofs -D -r -V "ATTENDLESS_UBUNTU" -cache-inodes -J -l \ 
+       -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot \
+       -boot-load-size 4 -boot-info-table -o /opt/autoinstall.iso /opt/ubuntuiso
 
 ####  Provar
 
