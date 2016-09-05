@@ -34,7 +34,7 @@ Es genera el fitxer de respostes Kickstart a partir del programa **system-config
 
 Proporcionarà un entorn gràfic per preparar les respostes. Algunes de les respostes es poden ignorar perquè no estan activades en Ubuntu (configurar entorn gràfic, autenticacions no bàsiques, Tallafocs, etc.. ) i en altres hi faltaran possibilitats (particionat automàtic de disc, ...)
 
-![system-config-kickstart](imatges/ks.png)
+![system-config-kickstart](../imatges/ks.png)
 
 I es graven les respostes en un fitxer. Per exemple *ks.cfg*
 
