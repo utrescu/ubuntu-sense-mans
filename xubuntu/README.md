@@ -6,7 +6,7 @@ El problema està en que fan servir un instal·lador anomenat Ubiquity i tots el
 * No s'automatitza la instal·lació (no es pot escapar de la pantalla inicial)
 * Quan he aconseguit que s'instal·li sense demanar res, no arranca el sistema...
 
-![fail](imatges/fail.png)
+![fail](../imatges/fail.png)
 
 Després de moltes proves he trobat que el problema està en fer les particions amb LVM. Sembla que Ubuntu Server no hi té cap problema però les versions Desktop NO FUNCIONEN.
 
