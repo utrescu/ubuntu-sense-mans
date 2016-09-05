@@ -58,7 +58,8 @@ Per exemple afegir `set timeout=1` fa que no calgui prémer return:
     }
     ...
 
-### 3. Crear les respostes
+4. Crear les respostes
+--------------------------
 
 En aquesta opció el fitxer de respostes tindrà unes opcions especials *ubiquity* que són per les opcions específiques de l'instal·lador d'Ubuntu que no estan en el Debian Installer.
 
@@ -175,7 +176,7 @@ I com que en la configuració he posat que les respostes estaran en el CD hi cop
 
     # cp xubuntu.cfg /opt/iso
 
-4. Generar la ISO i provar-ho
+5. Generar la ISO i provar-ho
 --------------------------------------
 
 Segons molts tutorials per generar la ISO n'hi hauria d'haver prou amb això:
@@ -214,9 +215,14 @@ Es pot comprovar que la ISO generada té suport de UEFI:
         Load Sectors: 4736 (0x1280)
         Load LBA: 204 (0x000000cc)
 
-El problema està en que si es fa servir aquesta ISO en un pendrive USB **no arranca de cap forma**. 
+El problema està en que si es fa servir aquesta ISO en un CD o DVD funciona però si es passa a un USB **no arranca de cap forma**. 
 
-Per poder-la posar en un USB i que també funcioni s'ha d'afegir un sector d'arrencada. El més fàcil és recuperar-lo del CD d'instal·lació de Xubuntu:
+Per poder fer servir la ISO en un USB i que funcioni s'ha d'afegir un MBR:  
+
+> ISO 9660 filesystems which are created by the mkisofs will boot via BIOS firmware, but only from optical media like CD, DVD, or BD.
+> The isohybrid feature enhances such filesystems by a Master Boot Record (MBR) for booting via BIOS from disk storage devices like USB flash drives.
+
+Per tant cal fer servir isohybrid. El més fàcil és recuperar el MBR de la ISO del CD d'instal·lació de Xubuntu:
 
     $ sudo dd if=ubuntu-16.04-desktop-amd64.iso bs=512 count=1 of=/opt/iso/isolinux/isohdpfx.bin
 
@@ -230,7 +236,7 @@ I genero la ISO amb xorriso (no és conya):
       -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat \ 
       -o /opt/xautomount2.iso .
 
-Es pot comprovar les dues particions de la ISO: 
+Es pot comprovar que hi ha dues particions en la ISO: 
 
     $ sudo fdisk -lu xautomount2.iso
     Disk xautomount2.iso: 1,2 GiB, 1265106944 bytes, 2470912 sectors
@@ -244,7 +250,7 @@ Es pot comprovar les dues particions de la ISO:
     xautomount2.iso1 *               0 2470911 2470912  1,2G  0 Buida
     xautomount2.iso2               716    5451    4736  2,3M ef EFI (FAT-12/16/32)
 
-Es pot comprovar que les característiques de la ISO són les mateixes que les del CD original de Xubuntu: 
+Es pot comprovar que les característiques de la ISO són les mateixes que les del CD original de Xubuntu fent servir **isoinfo**: 
 
     $ isoinfo -d -i xautomount2.iso 
     CD-ROM is in ISO 9660 format
@@ -281,3 +287,7 @@ Es pot obtenir més informació amb *dumpet* o *xorriso*:
 
     # xorriso -indev xautomount2.iso -toc -pvd_info
     # dumpet -i xautomount2.iso 
+
+Després es grava aquesta imatge a un USB i ... 
+
+> TO BE CONTINUED
