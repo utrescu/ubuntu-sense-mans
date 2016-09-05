@@ -12,7 +12,9 @@ Clonar màquines no optimitza el sistema, deixa basura en les màquines, tenen p
 
 > **odio clonar** 
 
-Per trobar un sistema que m'agradi he anat provant els mètodes que he trobat per fer-ho.
+Per trobar un sistema que m'agradi he anat provant els mètodes que he trobat per fer-ho. 
+
+Primer amb el sistema més senzill: Partir de Ubuntu Server:
 
 * [Opció 1: Fent servir Kickstart](kickstart/README.md)
 * [Opció 2: Només fer servir preseed](preseed/README.md)
@@ -22,7 +24,7 @@ Un problema que he trobat en la forma d'instal·lar és que al no estar basat en
 
 El que seria interessant seria poder modificar directament el CD d'instal·lació de Xubuntu (que és un Live CD ... )
 
-* [Opció 4: Modificar el LiveCD](iso/README.md)
+* [Opció 4: Modificar el LiveCD](xubuntu/README.md)
 
 Per mi el millor procediment és generar el fitxer de respostes però no posar-lo en el CD sinó tenir-lo en un servidor HTTP de manera que amb el mateix CD es podran aplicar diferents configuracions simplement modificant el fitxer.
 
