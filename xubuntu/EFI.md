@@ -290,4 +290,4 @@ Es pot obtenir més informació amb *dumpet* o *xorriso*:
 
 Després es grava aquesta imatge a un USB i ... 
 
-> TO BE CONTINUED
+![Xubuntu](../imatges/xubuntu.png)
