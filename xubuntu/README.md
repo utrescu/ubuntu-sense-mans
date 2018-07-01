@@ -1,6 +1,8 @@
 Modificar CD de Xubuntu Live CD
 ===============================
 
+Problema inicial al seguir les instruccions d'Ubuntu
+----------------------------------------------------------
 El problema està en que fan servir un instal·lador anomenat Ubiquity i tots els intents per automatizar la instal·lació, per ara, han acabat com el rosari de l'Aurora:
 
 * No s'automatitza la instal·lació (no es pot escapar de la pantalla inicial)
@@ -15,6 +17,9 @@ Canviant el pressed per:
     d-i partman-auto/method string regular
 
 Ha solucionat el problema immediatament.
+
+Solucions
+----------------------------
 
 Però no n'hi ha prou, amb sistemes basats en UEFI tenim un problema nou. Per tant tenim dos camins:
 
