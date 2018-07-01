@@ -36,4 +36,20 @@ Sembla que durant la instal·lació si es fa servir UEFI amb SecureBoot i **NO h
 
 ![falla](imatges/uefail.png)
 
+Solucions (pels que no volen saber res del procés)
+========================================================
 
+Després de totes les proves al final m'he quedat amb aquestes solucions que estan en la opció 4:
+
+Però no n'hi ha prou, amb sistemes basats en UEFI tenim un problema nou. Per tant tenim dos camins:
+
+* [BIOS Sense EFI](https://github.com/utrescu/ubuntu-sense-mans/blob/master/xubuntu/NoEFI.md)
+* [BIOS i EFI](https://github.com/utrescu/ubuntu-sense-mans/blob/master/xubuntu/EFI.md)
+
+Un cop generada la imatge ISO, es posa el CD en una màquina i el procés d'instal·lació es farà sense cap pregunta:
+
+- Sistema instal·lat amb Xubuntu
+- usuari 'usuari'
+- servidor SSH.
+- Grub protegit amb contrasenya
+- Sense cap mena de dubte és el millor sistema.
